@@ -11,7 +11,7 @@ public class SceneLoadingManager : MonoBehaviour
     {
         _myChannel.OnContinue += Continue;
     }
-    internal void LoadWithoutLoadingScreen(string sceneName)
+    internal void LoadSceneSkipLoadScreen(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }

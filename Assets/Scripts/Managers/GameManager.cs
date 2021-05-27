@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        _sceneLoadingManager.LoadScene("Main Menu");
+        _sceneLoadingManager.LoadSceneSkipLoadScreen("Main Menu");
     }
 
     private void StartGame()
