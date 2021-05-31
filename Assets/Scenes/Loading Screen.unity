@@ -123,11 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &265736064 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 994465691820882297, guid: 00d3083632322d2468cd8e0479b4f02e, type: 3}
-  m_PrefabInstance: {fileID: 1094820569}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1094820569
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -282,7 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 265736064}
+  m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &1618760395

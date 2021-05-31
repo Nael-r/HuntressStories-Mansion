@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b271a38fa7bf13b41b536a9b47fb9e4e, type: 3}
-  m_Name: Scene Loading Manager
+  m_Script: {fileID: 11500000, guid: 93bf7aedad0aecd42ba48349e4dc1f9e, type: 3}
+  m_Name: Camera Manager Channel
   m_EditorClassIdentifier: 

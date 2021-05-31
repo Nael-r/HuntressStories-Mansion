@@ -4,6 +4,7 @@ using static UnityEngine.InputSystem.InputAction;
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private PlayerControllerChannelSO _playerControllerChannel;
     [SerializeField] private PlayerMovement _playerMovement;
     [SerializeField] private PlayerLook _playerLook;
     private DefaultInputMap _defaultInputMap;
@@ -22,6 +23,12 @@ public class PlayerController : MonoBehaviour
         {
             _playerLook = GetComponent<PlayerLook>();
         }
+        SubscribePlayingInputs();
+        SubscribeInteractionInputs();
+        SubscribeEvents();
+    }
+    private void SubscribePlayingInputs()
+    {
         _defaultInputMap.Player.Fire.performed += ctx => Fire();
         _defaultInputMap.Player.Move.performed += ctx => Move(ctx);
         _defaultInputMap.Player.Move.canceled += ctx => StopMoving();
@@ -31,6 +38,35 @@ public class PlayerController : MonoBehaviour
         _defaultInputMap.Player.Look.canceled += ctx => StopLook();
         _defaultInputMap.Player.Interact.performed += ctx => Interact();
         _defaultInputMap.Player.Reload.performed += ctx => Reload();
+    }
+
+    private void SubscribeInteractionInputs()
+    {
+        _defaultInputMap.Interaction.Cancel.canceled += ctx => InteractCancel();
+    }
+
+    private void SubscribeEvents()
+    {
+        _playerControllerChannel.OnActivateInteractionControls += ActivateInteractionInput;
+        _playerControllerChannel.OnActivatePlayingControls += ActivatePlayingInput;
+    }
+
+    private void ActivatePlayingInput()
+    {
+        if (!_defaultInputMap.Player.enabled)
+        {
+            _defaultInputMap.Player.Enable();
+        }
+        _defaultInputMap.Interaction.Disable();
+    }
+
+    private void ActivateInteractionInput()
+    {
+        _defaultInputMap.Interaction.Enable();
+        if (_defaultInputMap.Player.enabled)
+        {
+            _defaultInputMap.Player.Disable();
+        }
     }
 
     private void OnEnable()
@@ -75,11 +111,16 @@ public class PlayerController : MonoBehaviour
     }
     private void Interact()
     {
-        Debug.Log("Interact");
+        _playerControllerChannel.Interact();
     }
 
     private void Reload()
     {
         Debug.Log("Reload");
+    }
+
+    private void InteractCancel()
+    {
+        _playerControllerChannel.InteractCancel();
     }
 }

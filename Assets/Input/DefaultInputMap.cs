@@ -847,6 +847,52 @@ public class @DefaultInputMap : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Interaction"",
+            ""id"": ""f8d0431a-890f-4352-9815-8476c38cbbc4"",
+            ""actions"": [
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""dc346b05-0e61-4524-b3e6-79f3992ed6a6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Value"",
+                    ""id"": ""ea00511d-e6bd-4f2e-81ea-f2669f5fb9fa"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""360396bb-1533-434d-ae38-e6583926d9f2"",
+                    ""path"": ""*/{Cancel}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a6d8f0cc-c76c-49b9-b435-5d717be3e69a"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -872,6 +918,10 @@ public class @DefaultInputMap : IInputActionCollection, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
+        // Interaction
+        m_Interaction = asset.FindActionMap("Interaction", throwIfNotFound: true);
+        m_Interaction_Cancel = m_Interaction.FindAction("Cancel", throwIfNotFound: true);
+        m_Interaction_Rotate = m_Interaction.FindAction("Rotate", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1103,6 +1153,47 @@ public class @DefaultInputMap : IInputActionCollection, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Interaction
+    private readonly InputActionMap m_Interaction;
+    private IInteractionActions m_InteractionActionsCallbackInterface;
+    private readonly InputAction m_Interaction_Cancel;
+    private readonly InputAction m_Interaction_Rotate;
+    public struct InteractionActions
+    {
+        private @DefaultInputMap m_Wrapper;
+        public InteractionActions(@DefaultInputMap wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Cancel => m_Wrapper.m_Interaction_Cancel;
+        public InputAction @Rotate => m_Wrapper.m_Interaction_Rotate;
+        public InputActionMap Get() { return m_Wrapper.m_Interaction; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(InteractionActions set) { return set.Get(); }
+        public void SetCallbacks(IInteractionActions instance)
+        {
+            if (m_Wrapper.m_InteractionActionsCallbackInterface != null)
+            {
+                @Cancel.started -= m_Wrapper.m_InteractionActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_InteractionActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_InteractionActionsCallbackInterface.OnCancel;
+                @Rotate.started -= m_Wrapper.m_InteractionActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_InteractionActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_InteractionActionsCallbackInterface.OnRotate;
+            }
+            m_Wrapper.m_InteractionActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
+            }
+        }
+    }
+    public InteractionActions @Interaction => new InteractionActions(this);
     public interface IUIActions
     {
         void OnNavigate(InputAction.CallbackContext context);
@@ -1125,5 +1216,10 @@ public class @DefaultInputMap : IInputActionCollection, IDisposable
         void OnInteract(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+    }
+    public interface IInteractionActions
+    {
+        void OnCancel(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
 }
