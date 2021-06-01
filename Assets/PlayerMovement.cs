@@ -8,13 +8,14 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerStamina _stamina;
-    [SerializeField] private Transform _followTarget;
+    [SerializeField] private Transform _cameraRotationTarget;
     [SerializeField] private float _moveSpeed = 10f;
     [SerializeField] private float _walkingSpeed = 2f;
     [SerializeField] private float _runningSpeed = 4f;
     [SerializeField] private float _runningStaminaCost = 8f;
     private float _maxSpeed;
-    private Vector3 _movementVector;
+    private Vector2 _inputVector;
+    private Vector3 _movementDirection;
     private bool _isMoving;
     private bool _isRunning;
     private void Awake()
@@ -27,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _stamina = GetComponent<PlayerStamina>();
         }
+        
     }
     private void Start()
     {
@@ -34,15 +36,17 @@ public class PlayerMovement : MonoBehaviour
     }
     internal void StartMoving(Vector2 inputAxis)
     {
-        _movementVector.x = inputAxis.x;
-        _movementVector.y = 0;
-        _movementVector.z = inputAxis.y;
+        _inputVector.x = inputAxis.x;
+        _inputVector.y = inputAxis.y;
         _isMoving = true;
+    }
+    private void Update()
+    {
+        Run();
     }
     private void FixedUpdate()
     {
         AddMovementForce();
-        Run();
     }
     private void AddMovementForce()
     {
@@ -52,14 +56,16 @@ public class PlayerMovement : MonoBehaviour
         }
         if (_rigidbody.velocity.magnitude < _maxSpeed)
         {
-            _rigidbody.AddForce(_movementVector.z * _followTarget.forward * _moveSpeed, ForceMode.Force);
-            _rigidbody.AddForce(_movementVector.x * _followTarget.right * _moveSpeed, ForceMode.Force);
+            _rigidbody.AddForce(_inputVector.y * _cameraRotationTarget.forward * _moveSpeed, ForceMode.Force);
+            _rigidbody.AddForce(_inputVector.x * _cameraRotationTarget.right * _moveSpeed, ForceMode.Force);
         }
-        else //this is to ensure that theres is always change of direction, even when player is at max speed
-        {
-            _rigidbody.AddForce(_movementVector.z * _followTarget.forward * _moveSpeed / 10, ForceMode.Force);
-            _rigidbody.AddForce(_movementVector.x * _followTarget.right * _moveSpeed / 10, ForceMode.Force);
-        }
+    }
+    private Vector3 GetMovementVectorXZ()
+    {
+        _movementDirection.x = _cameraRotationTarget.transform.forward.x;
+        _movementDirection.y = transform.position.y;
+        _movementDirection.z = _cameraRotationTarget.transform.forward.z;
+        return _movementDirection.normalized;
     }
     private void Run()
     {
@@ -78,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
     }
     internal void StopMoving()
     {
-        _movementVector = Vector3.zero;
+        _inputVector = Vector2.zero;
         _isMoving = false;
     }
 

@@ -6,17 +6,32 @@ using UnityEngine.Events;
 public class WorldCanvasChannelSO : ScriptableObject
 {
 
-    internal UnityAction<Transform> OnSendUI;
+    internal UnityAction<Vector3> OnShowInteractionUI;
+    internal UnityAction OnHideInteractionUI;
 
-    internal void SendUI(Transform ui)
+    internal void ShowInteractionUI(Vector3 position)
     {
-        if(OnSendUI != null)
+        if(OnShowInteractionUI != null)
         {
-            OnSendUI.Invoke(ui);
+            OnShowInteractionUI.Invoke(position);
         }
         else
         {
-            Debug.Log("SetParent has no listeners");
+            Debug.Log("ShowInteractionUI has no listeners");
         }
     }
+
+    internal void HideInteractionUI()
+    {
+        if (OnHideInteractionUI != null)
+        {
+            OnHideInteractionUI.Invoke();
+        }
+        else
+        {
+            Debug.Log("HideInteractionUI has no listeners");
+        }
+    }
+
+
 }

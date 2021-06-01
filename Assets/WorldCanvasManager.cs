@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class WorldCanvasManager : MonoBehaviour
 {
-    [SerializeField] private WorldCanvasChannelSO _interactionCanvas;
+    [SerializeField] private WorldCanvasChannelSO _worldCanvasChannel;
+    [SerializeField] private GameObject _interactionButtonImage;
     private void Awake()
     {
-        _interactionCanvas.OnSendUI += ReceiveUI;
+        _worldCanvasChannel.OnShowInteractionUI += ShowInteractionUI;
+        _worldCanvasChannel.OnHideInteractionUI += HideInteractionUI;
     }
-    private void ReceiveUI(Transform ui)
+    private void ShowInteractionUI(Vector3 position)
     {
-        ui.SetParent(transform);
+        _interactionButtonImage.transform.position = position;
+        _interactionButtonImage.SetActive(true);
+    }
+    private void HideInteractionUI()
+    {
+        _interactionButtonImage.SetActive(false);
     }
 }
